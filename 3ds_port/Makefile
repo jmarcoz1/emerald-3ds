@@ -433,6 +433,23 @@ build/randomizer_test$(EXESUFFIX): tests/randomizer_test.c src/3ds_randomizer_co
 	@mkdir -p build
 	$(HOSTCC) -std=c99 -O2 -Wall -Wextra -Werror -Iinclude tests/randomizer_test.c src/3ds_randomizer_core.c -o $@
 
+# The randomizer's rules beyond species (learnsets, evolutions, difficulty,
+# teams) on synthetic tables.
+verify: verify-randomizer-rules
+.PHONY: verify-randomizer-rules
+verify-randomizer-rules: build/randomizer_rules_test$(EXESUFFIX)
+	./build/randomizer_rules_test$(EXESUFFIX)
+
+# The hand-crafted strategy teams against the tree's constants and abilities.
+verify: verify-strategy-teams
+.PHONY: verify-strategy-teams
+verify-strategy-teams:
+	$(PYTHON) tests/strategy_teams_test.py --tree $(ROOT)
+
+build/randomizer_rules_test$(EXESUFFIX): tests/randomizer_rules_test.c src/3ds_randomizer_rules.c include/3ds_randomizer_rules.h
+	@mkdir -p build
+	$(HOSTCC) -std=c99 -O2 -Wall -Wextra -Werror -Iinclude tests/randomizer_rules_test.c src/3ds_randomizer_rules.c -o $@
+
 verify: verify-pak
 .PHONY: verify-pak
 verify-pak: build/pak_test.exe tests/make_test_pak.py

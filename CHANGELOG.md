@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+- Randomizer: beyond species, all optional and from the same seed, in
+  OPTIONS > MODES > MOVES & EVOS: random level-up learnsets (TYPE: about half
+  of a species' own types, or ANY; no duplicates, a damaging first move,
+  power capped by level; trainers, wild Pokémon, level-ups and the Move
+  Relearner all use them) and random evolutions (SIMILAR strength or ANY;
+  same method and level, never itself, no loops).
+- Difficulty, in OPTIONS > MODES > DIFFICULTY: EASY / NORMAL (the original
+  game, default) / HARD / EXTREME. Trainer levels −10% / +15% / +25%,
+  smarter AI scripts (CHECK_BAD_MOVE, TRY_TO_FAINT, CHECK_VIABILITY,
+  SETUP_FIRST_TURN, HP_AWARE), IV floors, EVs and held items, and bigger
+  boss teams. BOSS TEAMS: gym leaders, the Elite Four, the Champion, rivals,
+  Maxie and Archie get strong, progression-appropriate randomized teams with
+  their best moves. ALL DOUBLES makes every single-trainer battle double
+  (AUTO: on at HARD and EXTREME); STRATEGY TEAMS gives 22 notable trainers
+  hand-crafted double-battle teams (rain, sun, sand, hail, dual screens,
+  Shadow Tag + Perish Song, Follow Me, Earthquake + Levitate...; AUTO: on at
+  HARD and EXTREME). Nothing is stored in the save
+  (`3ds_port/docs/seeded_randomizer.md`).
+
 ## 0.5.0 — 2026-10-29
 
 The first beta.

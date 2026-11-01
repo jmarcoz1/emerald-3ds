@@ -1,0 +1,219 @@
+Emerald 3DS changes to pret/pokeemerald 76463dac15cad36aca5e2b3f6366abf9e53f814f: randomizer rules (random learnsets and evolutions, difficulty AI and trainer teams, doubles)
+Applies after 0082-japanese-pokedex-units.patch; apply with tools/bootstrap.py.
+
+diff --git a/src/battle_ai_script_commands.c b/src/battle_ai_script_commands.c
+--- a/src/battle_ai_script_commands.c
++++ b/src/battle_ai_script_commands.c
+@@ -16,6 +16,15 @@
+ #include "constants/items.h"
+ #include "constants/moves.h"
+ 
++#ifdef PORT_BRIDGE
++// The AI scripts of an ordinary trainer by difficulty (3ds_randomizer.h):
++// its own on NORMAL, the default.
++#include "3ds_randomizer.h"
++#define TRAINER_AI_FLAGS(trainer) CtrRandomizer_TrainerAiFlags(trainer)
++#else
++#define TRAINER_AI_FLAGS(trainer) (gTrainers[trainer].aiFlags)
++#endif
++
+ #define AI_ACTION_DONE          (1 << 0)
+ #define AI_ACTION_FLEE          (1 << 1)
+ #define AI_ACTION_WATCH         (1 << 2)
+@@ -375,9 +384,9 @@ void BattleAI_SetupAIData(u8 defaultScoreMoves)
+     else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_TRAINER_HILL | BATTLE_TYPE_SECRET_BASE))
+         AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_TRY_TO_FAINT;
+     else if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
+-        AI_THINKING_STRUCT->aiFlags = gTrainers[gTrainerBattleOpponent_A].aiFlags | gTrainers[gTrainerBattleOpponent_B].aiFlags;
++        AI_THINKING_STRUCT->aiFlags = TRAINER_AI_FLAGS(gTrainerBattleOpponent_A) | TRAINER_AI_FLAGS(gTrainerBattleOpponent_B);
+     else
+-       AI_THINKING_STRUCT->aiFlags = gTrainers[gTrainerBattleOpponent_A].aiFlags;
++       AI_THINKING_STRUCT->aiFlags = TRAINER_AI_FLAGS(gTrainerBattleOpponent_A);
+ 
+     if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
+         AI_THINKING_STRUCT->aiFlags |= AI_SCRIPT_DOUBLE_BATTLE; // act smart in doubles and don't attack your partner
+diff --git a/src/battle_main.c b/src/battle_main.c
+--- a/src/battle_main.c
++++ b/src/battle_main.c
+@@ -2090,6 +2090,10 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
+             }
+         }
+ 
++#ifdef PORT_BRIDGE
++        // Difficulty, boss and strategy teams, doubles (3ds_randomizer.h).
++        monsCount = CtrRandomizer_AdjustTrainerParty(party, trainerNum, monsCount, firstTrainer);
++#endif
+         gBattleTypeFlags |= gTrainers[trainerNum].doubleBattle;
+     }
+ 
+diff --git a/src/evolution_scene.c b/src/evolution_scene.c
+--- a/src/evolution_scene.c
++++ b/src/evolution_scene.c
+@@ -42,6 +42,14 @@
+ 
+ extern struct Evolution gEvolutionTable[][EVOS_PER_MON];
+ 
++#ifdef PORT_BRIDGE
++// What an evolution leads to with random evolutions (3ds_randomizer.h).
++#include "3ds_randomizer.h"
++#define EVOLUTION_TARGET(species, target) CtrRandomizer_Evolution(species, target)
++#else
++#define EVOLUTION_TARGET(species, target) (target)
++#endif
++
+ struct EvoInfo
+ {
+     u8 preEvoSpriteId;
+@@ -803,7 +811,7 @@ static void Task_EvolutionScene(u8 taskId)
+ 
+                 for (e = 0; e < EVOS_PER_MON; e++)
+                     if (gEvolutionTable[pre][e].method == EVO_TRADE_ITEM
+-                     && gEvolutionTable[pre][e].targetSpecies == post
++                     && EVOLUTION_TARGET(pre, gEvolutionTable[pre][e].targetSpecies) == post
+                      && gEvolutionTable[pre][e].param == held && held != ITEM_NONE)
+                     {
+                         held = ITEM_NONE;
+diff --git a/src/pokemon.c b/src/pokemon.c
+--- a/src/pokemon.c
++++ b/src/pokemon.c
+@@ -39,6 +39,15 @@
+ #include "text.h"
+ #include "trainer_hill.h"
+ #include "util.h"
++
++#ifdef PORT_BRIDGE
++// Seeded randomizer (3ds_randomizer.h, off by default): the level-up
++// learnset a species has, the original unless random learnsets are on.
++#include "3ds_randomizer.h"
++#define LEVEL_UP_LEARNSET(species) CtrRandomizer_Learnset(species)
++#else
++#define LEVEL_UP_LEARNSET(species) gLevelUpLearnsets[species]
++#endif
+ #include "constants/abilities.h"
+ #include "constants/battle_frontier.h"
+ #include "constants/battle_move_effects.h"
+@@ -3083,17 +3092,17 @@ void GiveBoxMonInitialMoveset(struct BoxPokemon *boxMon)
+     s32 level = GetLevelFromBoxMonExp(boxMon);
+     s32 i;
+ 
+-    for (i = 0; gLevelUpLearnsets[species][i] != LEVEL_UP_END; i++)
++    for (i = 0; LEVEL_UP_LEARNSET(species)[i] != LEVEL_UP_END; i++)
+     {
+         u16 moveLevel;
+         u16 move;
+ 
+-        moveLevel = (gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_LV);
++        moveLevel = (LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_LV);
+ 
+         if (moveLevel > (level << 9))
+             break;
+ 
+-        move = (gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID);
++        move = (LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID);
+ 
+         if (GiveMoveToBoxMon(boxMon, move) == MON_HAS_MAX_MOVES)
+             DeleteFirstMoveAndGiveMoveToBoxMon(boxMon, move);
+@@ -3114,17 +3123,17 @@ u16 MonTryLearningNewMove(struct Pokemon *mon, bool8 firstMove)
+     {
+         sLearningMoveTableID = 0;
+ 
+-        while ((gLevelUpLearnsets[species][sLearningMoveTableID] & LEVEL_UP_MOVE_LV) != (level << 9))
++        while ((LEVEL_UP_LEARNSET(species)[sLearningMoveTableID] & LEVEL_UP_MOVE_LV) != (level << 9))
+         {
+             sLearningMoveTableID++;
+-            if (gLevelUpLearnsets[species][sLearningMoveTableID] == LEVEL_UP_END)
++            if (LEVEL_UP_LEARNSET(species)[sLearningMoveTableID] == LEVEL_UP_END)
+                 return MOVE_NONE;
+         }
+     }
+ 
+-    if ((gLevelUpLearnsets[species][sLearningMoveTableID] & LEVEL_UP_MOVE_LV) == (level << 9))
++    if ((LEVEL_UP_LEARNSET(species)[sLearningMoveTableID] & LEVEL_UP_MOVE_LV) == (level << 9))
+     {
+-        gMoveToLearn = (gLevelUpLearnsets[species][sLearningMoveTableID] & LEVEL_UP_MOVE_ID);
++        gMoveToLearn = (LEVEL_UP_LEARNSET(species)[sLearningMoveTableID] & LEVEL_UP_MOVE_ID);
+         sLearningMoveTableID++;
+         retVal = GiveMoveToMon(mon, gMoveToLearn);
+     }
+@@ -5704,6 +5713,12 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 mode, u16 evolutionItem)
+         break;
+     }
+ 
++#ifdef PORT_BRIDGE
++    // Seeded randomizer: the species this evolution leads to instead
++    // (3ds_randomizer.h; itself unless random evolutions are on).
++    if (targetSpecies != SPECIES_NONE)
++        targetSpecies = CtrRandomizer_Evolution(species, targetSpecies);
++#endif
+     return targetSpecies;
+ }
+ 
+@@ -6411,23 +6426,23 @@ u8 GetMoveRelearnerMoves(struct Pokemon *mon, u16 *moves)
+     {
+         u16 moveLevel;
+ 
+-        if (gLevelUpLearnsets[species][i] == LEVEL_UP_END)
++        if (LEVEL_UP_LEARNSET(species)[i] == LEVEL_UP_END)
+             break;
+ 
+-        moveLevel = gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_LV;
++        moveLevel = LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_LV;
+ 
+         if (moveLevel <= (level << 9))
+         {
+-            for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != (gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID); j++)
++            for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != (LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID); j++)
+                 ;
+ 
+             if (j == MAX_MON_MOVES)
+             {
+-                for (k = 0; k < numMoves && moves[k] != (gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID); k++)
++                for (k = 0; k < numMoves && moves[k] != (LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID); k++)
+                     ;
+ 
+                 if (k == numMoves)
+-                    moves[numMoves++] = gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID;
++                    moves[numMoves++] = LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID;
+             }
+         }
+     }
+@@ -6440,8 +6455,8 @@ u8 GetLevelUpMovesBySpecies(u16 species, u16 *moves)
+     u8 numMoves = 0;
+     int i;
+ 
+-    for (i = 0; i < MAX_LEVEL_UP_MOVES && gLevelUpLearnsets[species][i] != LEVEL_UP_END; i++)
+-         moves[numMoves++] = gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID;
++    for (i = 0; i < MAX_LEVEL_UP_MOVES && LEVEL_UP_LEARNSET(species)[i] != LEVEL_UP_END; i++)
++         moves[numMoves++] = LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID;
+ 
+      return numMoves;
+ }
+@@ -6465,23 +6480,23 @@ u8 GetNumberOfRelearnableMoves(struct Pokemon *mon)
+     {
+         u16 moveLevel;
+ 
+-        if (gLevelUpLearnsets[species][i] == LEVEL_UP_END)
++        if (LEVEL_UP_LEARNSET(species)[i] == LEVEL_UP_END)
+             break;
+ 
+-        moveLevel = gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_LV;
++        moveLevel = LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_LV;
+ 
+         if (moveLevel <= (level << 9))
+         {
+-            for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != (gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID); j++)
++            for (j = 0; j < MAX_MON_MOVES && learnedMoves[j] != (LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID); j++)
+                 ;
+ 
+             if (j == MAX_MON_MOVES)
+             {
+-                for (k = 0; k < numMoves && moves[k] != (gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID); k++)
++                for (k = 0; k < numMoves && moves[k] != (LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID); k++)
+                     ;
+ 
+                 if (k == numMoves)
+-                    moves[numMoves++] = gLevelUpLearnsets[species][i] & LEVEL_UP_MOVE_ID;
++                    moves[numMoves++] = LEVEL_UP_LEARNSET(species)[i] & LEVEL_UP_MOVE_ID;
+             }
+         }
+     }
