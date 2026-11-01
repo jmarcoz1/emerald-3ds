@@ -86,10 +86,51 @@ uint32_t CtrRandomizer_Seed(void);
 /* What this species becomes for that kind: itself while the kind is off. */
 uint16_t CtrRandomizer_Species(unsigned kind, uint16_t species);
 
+/*
+ * Beyond species (src/3ds_randomizer_ext.c; the rules themselves are in
+ * include/3ds_randomizer_rules.h). Settings, all in settings.txt:
+ *   rand_moves        random level-up learnsets (0/1);
+ *   rand_moves_style  0 TYPED (half of a species' moves of its own types),
+ *                     1 ANY;
+ *   rand_evos         random evolutions (0/1);
+ *   rand_evos_style   0 SIMILAR (a target of about the same strength), 1 ANY;
+ *   difficulty        0 EASY, 1 NORMAL (the original game, default),
+ *                     2 HARD, 3 EXTREME;
+ *   rand_bosses       BOSS TEAMS (default 1): gym leaders, the Elite Four,
+ *                     the Champion, rivals and the team leaders get strong
+ *                     randomized teams and the hard-mode extras;
+ *   all_doubles       every trainer battle double: 0 OFF, 1 AUTO (on at
+ *                     HARD and EXTREME), 2 ON (default, every difficulty);
+ *   strategy_teams    the hand-crafted teams of src/3ds_strategy_teams.h:
+ *                     0 OFF, 1 AUTO, 2 ON (default).
+ * Like the species, these change what is generated from then on, never a
+ * Pokemon already caught, and nothing is stored in the save.
+ */
+struct Pokemon;
+unsigned CtrRandomizer_Difficulty(void);
+bool CtrRandomizer_LearnsetsEnabled(void);
+bool CtrRandomizer_DoublesEnabled(void);
+bool CtrRandomizer_StrategyEnabled(void);
+/* The level-up learnset a species has: the original unless rand_moves. */
+const uint16_t *CtrRandomizer_Learnset(uint16_t species);
+/* What a species evolving into target evolves into instead. */
+uint16_t CtrRandomizer_Evolution(uint16_t species, uint16_t target);
+/* After the vanilla party is made (battle_main.c, CreateNPCTrainerParty):
+ * the difficulty, boss and strategy teams and doubles; the new count. */
+uint8_t CtrRandomizer_AdjustTrainerParty(struct Pokemon *party, uint16_t trainerNum, uint8_t monsCount,
+                                         uint8_t firstTrainer);
+/* The AI scripts of an ordinary trainer battle (battle_ai_script_commands.c). */
+uint32_t CtrRandomizer_TrainerAiFlags(uint16_t trainerNum);
+
 /* For the OPTIONS cells (include/3ds_randomizer_extras.inc). */
 extern const char *const gCtrRandomizerOpenText[1];
 extern const char *const gCtrRandomizerBackText[1];
 extern const char *const gCtrRandomizerNewSeedText[1];
+extern const char *const gCtrRandomizerMoveStyleText[2];
+extern const char *const gCtrRandomizerEvoStyleText[2];
+extern const char *const gCtrRandomizerDifficultyText[4];
+extern const char *const gCtrRandomizerAutoText[3];
+void CtrRandomizer_OpenDifficulty(void);
 void CtrRandomizer_Open(void);
 void CtrRandomizer_Back(void);
 void CtrRandomizer_StepSeed(int direction);

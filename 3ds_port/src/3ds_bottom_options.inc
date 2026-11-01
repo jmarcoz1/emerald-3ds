@@ -107,6 +107,18 @@ static const OptRowDef sRowsRandom[] = {
     EXTRA_ROW("rand_seed"),
     EXTRA_ROW("rand_new_seed"),
 };
+static const OptRowDef sRowsRandomRules[] = {
+    EXTRA_ROW("rand_moves"),
+    EXTRA_ROW("rand_moves_style"),
+    EXTRA_ROW("rand_evos"),
+    EXTRA_ROW("rand_evos_style"),
+};
+static const OptRowDef sRowsDifficulty[] = {
+    EXTRA_ROW("difficulty"),
+    EXTRA_ROW("rand_bosses"),
+    EXTRA_ROW("all_doubles"),
+    EXTRA_ROW("strategy_teams"),
+};
 static const OptRowDef sRowsCatch[] = {
     EXTRA_ROW("encounter_rate"),
     EXTRA_ROW("shiny_odds"),
@@ -147,6 +159,8 @@ static const OptGroupDef sGroupsBattle[] = {
 static const OptGroupDef sGroupsModes[] = {
     GROUP("NUZLOCKE", sRowsNuzlocke),
     GROUP(CTR_TEXT("RANDOMIZER", "ALEATORIO", "ALÉATOIRE", "CASUALE", "ALEATÓRIO", "ZUFALL", "ランダム"), sRowsRandom),
+    GROUP(CTR_TEXT("MOVES & EVOS", "MOV. Y EVOL.", "CAP. & ÉVOL.", "MOSSE & EVO", "GOLPES & EVO", "ATT. & ENTW.", "わざ しんか"), sRowsRandomRules),
+    GROUP(CTR_TEXT("DIFFICULTY", "DIFICULTAD", "DIFFICULTÉ", "DIFFICOLTÀ", "DIFICULD.", "SCHWIERIG.", "なんいど"), sRowsDifficulty),
 };
 static const OptGroupDef sGroupsCheats[] = {
     GROUP(CTR_TEXT("CATCHING", "CAPTURA", "CAPTURE", "CATTURA", "CAPTURA", "FANGEN", "ほかく"), sRowsCatch),
@@ -686,6 +700,8 @@ void CtrExtras_ShowScreen(unsigned page, unsigned screen)
         ShowOptionGroup(CAT_CHEATS, 3);
     else if (page == CTR_EXTRAS_CHEATS && screen == 2)
         ShowOptionGroup(CAT_MODES, 1);
+    else if (page == CTR_EXTRAS_CHEATS && screen == 3)
+        ShowOptionGroup(CAT_MODES, 3);
     else if (page == CTR_EXTRAS_ENHANCEMENTS && screen == 2 && (EnabledScreens() >> SCR_NUZLOCKE & 1))
         sScreen = SCR_NUZLOCKE;
 }

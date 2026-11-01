@@ -34,6 +34,11 @@ const char *const gCtrRandomizerOpenText[1] = {CTR_TEXT("TAP TO OPEN", "TOCA PAR
 const char *const gCtrRandomizerBackText[1] = {CTR_TEXT("BACK TO CHEATS", "VOLVER A TRUCOS", "RETOUR", "INDIETRO", "VOLTAR", "ZURÜCK", "チートに もどる")};
 const char *const gCtrRandomizerNewSeedText[1] = {CTR_TEXT("TAP FOR NEW", "TOCA PARA NUEVA", "NOUVELLE", "NUOVO", "TOQUE P/ NOVA", "NEU: TIPPEN", "タッチで あたらしく")};
 
+const char *const gCtrRandomizerMoveStyleText[2] = {CTR_TEXT("TYPE", "TIPO", "TYPE", "TIPO", "TIPO", "TYP", "タイプ"), CTR_TEXT("ANY", "CUALQUIERA", "TOUT", "QUALSIASI", "QUALQUER", "BELIEBIG", "なんでも")};
+const char *const gCtrRandomizerEvoStyleText[2] = {CTR_TEXT("SIMILAR", "SIMILAR", "SIMILAIRE", "SIMILE", "SIMILAR", "ÄHNLICH", "にた つよさ"), CTR_TEXT("ANY", "CUALQUIERA", "TOUT", "QUALSIASI", "QUALQUER", "BELIEBIG", "なんでも")};
+const char *const gCtrRandomizerDifficultyText[4] = {CTR_TEXT("EASY", "FÁCIL", "FACILE", "FACILE", "FÁCIL", "LEICHT", "やさしい"), CTR_TEXT("NORMAL", "NORMAL", "NORMAL", "NORMALE", "NORMAL", "NORMAL", "ふつう"), CTR_TEXT("HARD", "DIFÍCIL", "DIFFICILE", "DIFFICILE", "DIFÍCIL", "SCHWER", "むずかしい"), CTR_TEXT("EXTREME", "EXTREMO", "EXTRÊME", "ESTREMO", "EXTREMO", "EXTREM", "げきむず")};
+const char *const gCtrRandomizerAutoText[3] = {CTR_TEXT("OFF", "NO", "NON", "NO", "NENHUM", "AUS", "オフ"), CTR_TEXT("AUTO", "AUTO", "AUTO", "AUTO", "AUTO", "AUTO", "オート"), CTR_TEXT("ON", "SÍ", "OUI", "SÌ", "SIM", "AN", "オン")};
+
 static CtrRandomizerTable sTable;
 static bool sTableBuilt;
 
@@ -83,6 +88,12 @@ u16 CtrEncounters_DisplaySpecies(u16 species)
 void CtrRandomizer_Open(void)
 {
     CtrExtras_ShowScreen(CTR_EXTRAS_CHEATS, 2);
+}
+
+/* The difficulty cells have a screen of their own too (CHEATS 4). */
+void CtrRandomizer_OpenDifficulty(void)
+{
+    CtrExtras_ShowScreen(CTR_EXTRAS_CHEATS, 3);
 }
 
 void CtrRandomizer_Back(void)
