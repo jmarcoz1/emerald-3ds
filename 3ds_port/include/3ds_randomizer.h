@@ -100,9 +100,9 @@ uint16_t CtrRandomizer_Species(unsigned kind, uint16_t species);
  *                     the Champion, rivals and the team leaders get strong
  *                     randomized teams and the hard-mode extras;
  *   all_doubles       every trainer battle double: 0 OFF, 1 AUTO (on at
- *                     HARD and EXTREME, default), 2 ON;
+ *                     HARD and EXTREME), 2 ON (default, every difficulty);
  *   strategy_teams    the hand-crafted teams of src/3ds_strategy_teams.h:
- *                     0 OFF, 1 AUTO (default), 2 ON.
+ *                     0 OFF, 1 AUTO, 2 ON (default).
  * Like the species, these change what is generated from then on, never a
  * Pokemon already caught, and nothing is stored in the save.
  */

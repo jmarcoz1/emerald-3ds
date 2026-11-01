@@ -51,10 +51,10 @@ unsigned CtrRandomizer_Difficulty(void)
     return value >= 0 && value < CTR_DIFFICULTY_COUNT ? (unsigned)value : CTR_DIFFICULTY_NORMAL;
 }
 
-/* OFF, AUTO (on at HARD and EXTREME) or ON. */
+/* OFF, AUTO (on at HARD and EXTREME) or ON (the default: every difficulty). */
 static bool AutoSetting(const char *key)
 {
-    int value = CtrSettings_GetInt(key, MODE_AUTO);
+    int value = CtrSettings_GetInt(key, MODE_ON);
 
     if (value == MODE_ON)
         return true;

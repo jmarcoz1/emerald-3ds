@@ -48,8 +48,8 @@ def main(argv=None) -> int:
                         help="similar: a target of about the same strength (default)")
     parser.add_argument("--difficulty", choices=DIFFICULTIES, default="normal")
     parser.add_argument("--no-bosses", action="store_true", help="bosses get no special teams")
-    parser.add_argument("--doubles", choices=MODES, default="auto", help="every trainer battle double")
-    parser.add_argument("--strategy", choices=MODES, default="auto", help="the hand-crafted strategy teams")
+    parser.add_argument("--doubles", choices=MODES, default="on", help="every trainer battle double")
+    parser.add_argument("--strategy", choices=MODES, default="on", help="the hand-crafted strategy teams")
     parser.add_argument("--off", action="store_true", help="every kind off")
     args = parser.parse_args(argv)
 

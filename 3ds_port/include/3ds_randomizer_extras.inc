@@ -13,7 +13,8 @@
  * Random learnsets and evolutions share that screen; the difficulty cells
  * (difficulty, rand_bosses, all_doubles, strategy_teams) have a fourth
  * (CHEATS 4), opened from the third. Their fallbacks are the game's own
- * behaviour: NORMAL, and AUTO only acts above NORMAL.
+ * behaviour (NORMAL) except ALL DOUBLES and STRATEGY TEAMS, which default
+ * to ON at every difficulty; AUTO keeps them to HARD and EXTREME.
  */
     {CTR_EXTRAS_CHEATS, CTR_TEXT("RANDOMIZER", "ALEATORIO", "ALÉATOIRE", "CASUALE", "ALEATÓRIO", "ZUFALL", "ランダム"), "rand_open", 0, 0, gCtrRandomizerOpenText, CtrRandomizer_Open, NULL, NULL},
     {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 2), CTR_TEXT("RANDOMIZER", "ALEATORIO", "ALÉATOIRE", "CASUALE", "ALEATÓRIO", "ZUFALL", "ランダム"), "rand_back", 0, 0, gCtrRandomizerBackText, CtrRandomizer_Back, NULL, NULL},
@@ -30,5 +31,5 @@
     {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 3), CTR_TEXT("DIFFICULTY", "DIFICULTAD", "DIFFICULTÉ", "DIFFICOLTÀ", "DIFICULDADE", "SCHWIERIGKEIT", "なんいど"), "rand_difficulty_back", 0, 0, gCtrRandomizerBackText, CtrRandomizer_Open, NULL, NULL},
     {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 3), CTR_TEXT("DIFFICULTY", "DIFICULTAD", "DIFFICULTÉ", "DIFFICOLTÀ", "DIFICULDADE", "SCHWIERIGKEIT", "なんいど"), "difficulty", 4, 1, gCtrRandomizerDifficultyText, NULL, NULL, NULL},
     {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 3), CTR_TEXT("BOSS TEAMS", "EQUIPOS JEFE", "ÉQUIPES BOSS", "SQUADRE BOSS", "TIMES CHEFES", "BOSS-TEAMS", "ボスの チーム"), "rand_bosses", 2, 1, gCtrExtrasOffOn, NULL, NULL, NULL},
-    {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 3), CTR_TEXT("ALL DOUBLES", "TODO DOBLES", "TOUT EN DUO", "TUTTE DOPPIE", "TUDO EM DUPLA", "NUR DOPPEL", "ぜんぶ ダブル"), "all_doubles", 3, 1, gCtrRandomizerAutoText, NULL, NULL, NULL},
-    {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 3), CTR_TEXT("STRATEGY TEAMS", "EQUIPOS TÁCTICOS", "ÉQUIPES TACT.", "SQUADRE TATT.", "TIMES TÁTICOS", "TAKTIK-TEAMS", "さくせん チーム"), "strategy_teams", 3, 1, gCtrRandomizerAutoText, NULL, NULL, NULL},
+    {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 3), CTR_TEXT("ALL DOUBLES", "TODO DOBLES", "TOUT EN DUO", "TUTTE DOPPIE", "TUDO EM DUPLA", "NUR DOPPEL", "ぜんぶ ダブル"), "all_doubles", 3, 2, gCtrRandomizerAutoText, NULL, NULL, NULL},
+    {CTR_EXTRAS_SCREEN(CTR_EXTRAS_CHEATS, 3), CTR_TEXT("STRATEGY TEAMS", "EQUIPOS TÁCTICOS", "ÉQUIPES TACT.", "SQUADRE TATT.", "TIMES TÁTICOS", "TAKTIK-TEAMS", "さくせん チーム"), "strategy_teams", 3, 2, gCtrRandomizerAutoText, NULL, NULL, NULL},

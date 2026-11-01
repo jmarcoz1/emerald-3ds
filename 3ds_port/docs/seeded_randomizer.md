@@ -121,10 +121,12 @@ original first stage (the Day Care walks the original table back).
 |------------------|---------------------------------------|---------|
 | `difficulty`     | EASY (0) / NORMAL (1) / HARD (2) / EXTREME (3) | NORMAL |
 | `rand_bosses`    | BOSS TEAMS OFF / ON                   | ON      |
-| `all_doubles`    | OFF (0) / AUTO (1) / ON (2)           | AUTO    |
-| `strategy_teams` | OFF (0) / AUTO (1) / ON (2)           | AUTO    |
+| `all_doubles`    | OFF (0) / AUTO (1) / ON (2)           | ON      |
+| `strategy_teams` | OFF (0) / AUTO (1) / ON (2)           | ON      |
 
-AUTO means on at HARD and EXTREME, off at EASY and NORMAL.
+Both default to ON, at every difficulty from EASY to EXTREME, whether the
+species randomizer is on or not. AUTO keeps them to HARD and EXTREME (off at
+EASY and NORMAL); OFF gives the original single battles and teams.
 
 What the difficulty changes, for the trainers of the game (the same ones the
 species randomizer touches: not the Battle Frontier, the Trainer Hill,

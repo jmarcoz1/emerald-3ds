@@ -15,10 +15,10 @@
   boss teams. BOSS TEAMS: gym leaders, the Elite Four, the Champion, rivals,
   Maxie and Archie get strong, progression-appropriate randomized teams with
   their best moves. ALL DOUBLES makes every single-trainer battle double
-  (AUTO: on at HARD and EXTREME); STRATEGY TEAMS gives 22 notable trainers
+  (default ON at every difficulty; AUTO: only HARD and EXTREME); STRATEGY TEAMS gives 22 notable trainers
   hand-crafted double-battle teams (rain, sun, sand, hail, dual screens,
-  Shadow Tag + Perish Song, Follow Me, Earthquake + Levitate...; AUTO: on at
-  HARD and EXTREME). Nothing is stored in the save
+  Shadow Tag + Perish Song, Follow Me, Earthquake + Levitate...; default ON
+  at every difficulty, AUTO: only HARD and EXTREME). Nothing is stored in the save
   (`3ds_port/docs/seeded_randomizer.md`).
 
 ## 0.5.0 — 2026-10-29
